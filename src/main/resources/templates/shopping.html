@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Checkout - Crumbs & Cakes</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Oswald:wght@500;600;700&family=Pacifico&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Stylesheet -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<style>
+    table {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    table th, table td {
+        word-wrap: break-word;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    table th:nth-child(1) { width: 40%; } /* Cake Name */
+    table th:nth-child(2) { width: 15%; } /* Quantity */
+    table th:nth-child(3) { width: 20%; } /* Total Amount */
+    table th:nth-child(4) { width: 25%; } /* Action */
+</style>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid px-0 d-none d-lg-block">
+        <div class="row gx-0">
+            <div class="col-lg-4 text-center bg-secondary py-3">
+                <div class="d-inline-flex align-items-center justify-content-center">
+                    <i class="bi bi-envelope fs-1 text-primary me-3"></i>
+                    <div class="text-start">
+                        <h6 class="text-uppercase mb-1">Email Us</h6>
+                        <span>contact@crumbsandcakes.com</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center bg-primary border-inner py-3">
+                <div class="d-inline-flex align-items-center justify-content-center">
+                    <a th:href="@{/}" class="navbar-brand">
+                        <h1 class="m-0 text-uppercase text-white">
+                            <i class="fa fa-birthday-cake fs-1 text-dark me-3"></i>Crumbs & Cakes
+                        </h1>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center bg-secondary py-3">
+                <div class="d-inline-flex align-items-center justify-content-center">
+                    <i class="bi bi-phone-vibrate fs-1 text-primary me-3"></i>
+                    <div class="text-start">
+                        <h6 class="text-uppercase mb-1">Call Us</h6>
+                        <span>+91 63817 81640</span>
+                    </div>
+                    <h2 class="ms-4" th:text="${user_name}">Guest</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-dark bg-img p-5 mb-5">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-4 text-uppercase text-white">Checkout</h1>
+                <a th:href="@{/home}" class="text-white">Home</a>
+                <i class="far fa-square text-primary px-2"></i>
+                <a th:href="@{/shop}" class="text-white">Shop</a>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Cart Summary Section -->
+    <div class="container mt-4">
+        <center><h2>Your Shopping Cart</h2></center>
+
+        <!-- If cart has items -->
+        <div th:if="${cartItems} != null and ${cartItems.size()} > 0">
+            <table class="table table-bordered mt-3 text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Cake Name</th>
+                        <th>Quantity</th>
+                        <th>Total Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${cartItems}" th:id="'row-' + ${item.id}">
+                        <td th:text="${item.cake_names}"></td>
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <!-- Decrease Quantity -->
+                                <button class="btn btn-sm btn-secondary"
+                                        th:attr="onclick='updateQuantity(' + ${item.id} + ', \'decrease\', this)'">-</button>
+
+                                <!-- Display Quantity -->
+                                <span class="quantity" th:text="${item.quantity}"></span>
+
+                                <!-- Increase Quantity -->
+                                <button class="btn btn-sm btn-secondary"
+                                        th:attr="onclick='updateQuantity(' + ${item.id} + ', \'increase\', this)'">+</button>
+                            </div>
+                        </td>
+                        <td>
+                            Rs <span class="total-amount" 
+                                    th:text="${item.total_amount}" 
+                                    th:attr="data-price=${item.total_amount / item.quantity}"></span>
+                        </td>
+                        <td>
+                            <!-- Remove Item -->
+                            <button class="btn btn-danger btn-sm"
+                                    th:attr="onclick='removeItem(' + ${item.id} + ')'" type="button">Remove</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- If cart is empty -->
+        <div id="empty-cart-message" class="text-center mt-4" style="display: none;">
+            <h4>Nothing here!</h4>
+            <a th:href="@{/shop}" class="btn btn-primary mt-2">Go to Shop</a>
+        </div>
+
+    </div>
+
+    <!-- Checkout Form -->
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Customer & Payment Details</h2>
+        <form th:action="@{/submitOrder}" method="post" class="w-75 mx-auto bg-light p-4 rounded shadow">
+            <div class="mb-3">
+                <label for="customer_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="customer_email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="customer_email" name="customer_email" required>
+            </div>
+            <div class="mb-3">
+                <label for="customer_phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="customer_phone" name="customer_phone" required>
+            </div>
+            <div class="mb-3">
+                <label for="customer_address" class="form-label">Address</label>
+                <textarea class="form-control" id="customer_address" name="customer_address" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="payment_method" class="form-label">Payment Method</label>
+                <select class="form-select" id="payment_method" name="payment_method" required>
+                    <option value="">Select Payment Method</option>
+                    <option value="Cash on Delivery">Cash on Delivery</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Credit Card">Credit Card</option>
+                </select>
+            </div>
+            <div class="text-center d-flex justify-content-center gap-3">
+                <!-- ✅ Place Order -->
+                <button type="submit" class="btn btn-primary px-4">Place Order</button>
+
+                <!-- ✅ Cancel Order (clears cart) -->
+                <form th:action="@{/cancelOrder}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger px-4">Cancel</button>
+                </form>
+            </div>
+
+        </form>
+    </div>
+
+     <!-- Footer Start -->
+    <div class="container-fluid bg-dark bg-img text-secondary" style="margin-top: 135px">
+        <div class="container">
+            <div class="row gx-5">
+                <div class="col-lg-4 col-md-6 mt-lg-n5">
+                    <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 bg-primary border-inner p-4">
+                        <a href="index.html" class="navbar-brand">
+                            <h1 class="m-0 text-uppercase text-white"><i class="fa fa-birthday-cake fs-1 text-dark me-3"></i>Crumbs & Cakes</h1>
+                        </a>
+                        <p class="mt-3">At Crumbs & Cakes, we specialize in creating delicious cakes and pastries that make every occasion memorable. Located in Madurai, we are dedicated to providing delightful treats with a touch of love and care.</p>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-6">
+                    <div class="row gx-5">
+                        <div class="col-lg-4 col-md-12 pt-5 mb-5">
+                            <h4 class="text-primary text-uppercase mb-4">Get In Touch</h4>
+                             <div class="d-flex mb-2">
+                                <i class="bi bi-geo-alt text-primary me-2"></i>
+                                <p class="mb-0">123 Temple Road, Madurai, Tamil Nadu, India</p>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <i class="bi bi-envelope-open text-primary me-2"></i>
+                                <p class="mb-0">contact@crumbsandcakes.com</p>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <i class="bi bi-telephone text-primary me-2"></i>
+                                <p class="mb-0">+91 63817 81640</p>
+                            </div>
+                            <div class="d-flex mt-4">
+                                <a class="btn btn-lg btn-primary btn-lg-square border-inner rounded-0 me-2" href="#"><i class="fab fa-twitter fw-normal"></i></a>
+                                <a class="btn btn-lg btn-primary btn-lg-square border-inner rounded-0 me-2" href="#"><i class="fab fa-facebook-f fw-normal"></i></a>
+                                <a class="btn btn-lg btn-primary btn-lg-square border-inner rounded-0 me-2" href="#"><i class="fab fa-instagram fw-normal"></i></a>
+                                <a class="btn btn-lg btn-primary btn-lg-square border-inner rounded-0 me-2" href="#"><i class="fab fa-youtube fw-normal"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-12 pt-0 pt-lg-5 mb-5">
+                            <h4 class="text-primary text-uppercase mb-4">Quick Links</h4>
+                            <div class="d-flex flex-column justify-content-start">
+                                <a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                                <a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                                <a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                                <a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Meet The Team</a>
+                                <a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a>
+                                <a class="text-secondary" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-12 pt-0 pt-lg-5 mb-5">
+                            <h4 class="text-primary text-uppercase mb-4">Newsletter</h4>
+                            <p>Stay updated with our latest offers and cake designs. Sign up for our newsletter and enjoy sweet surprises.</p>
+                            <form action="">
+                                <div class="input-group">
+                                    <input type="email" class="form-control border-white p-3" placeholder="Your Email">
+                                    <button class="btn btn-primary">Sign Up</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid text-secondary py-4" style="background: #111111;">
+        <div class="container text-center">
+            <p class="mb-0">&copy; <a class="text-white border-bottom" href="#">Crumbs & Cakes</a>. All Rights Reserved. Designed by <a class="text-white border-bottom" >Jeya Chithra</a></p>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+
+
+    <script>
+        function updateQuantity(id, action, btn) {
+            const row = btn.closest('tr');
+            const qtySpan = row.querySelector('.quantity');
+            let qty = parseInt(qtySpan.textContent);
+
+            // Prevent decreasing below 1
+            if (action === 'decrease' && qty <= 1) return;
+
+            // Update quantity locally
+            qty = action === 'increase' ? qty + 1 : qty - 1;
+            qtySpan.textContent = qty;
+
+            // Update total amount dynamically
+            const totalCell = row.querySelector('.total-amount');
+            const unitPrice = parseFloat(totalCell.dataset.price);
+            totalCell.textContent = (unitPrice * qty).toFixed(2);
+
+            // Send AJAX to server to update backend
+            fetch(`/cart/${action}/${id}`, { method: 'POST' });
+        }
+
+        function removeItem(id) {
+            fetch(`/cart/delete/${id}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        const row = document.getElementById('row-' + id);
+                        row.remove();
+
+                        // Check if table body is empty
+                        const tableBody = document.querySelector('tbody');
+                        if (tableBody.children.length === 0) {
+                            // Hide table and show empty message
+                            document.querySelector('table').style.display = 'none';
+                            document.getElementById('empty-cart-message').style.display = 'block';
+                        }
+                    }
+                });
+        }
+
+
+        </script>
+</body>
+</html>
+
